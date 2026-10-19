@@ -1,0 +1,15 @@
+{
+  "source_id": "SOP-CAFFEINE-B-005",
+  "title": "Network B Caffeine Instruction",
+  "version": "1.4",
+  "status": "approved",
+  "owner": "Network B SOP Owner",
+  "review_date": "2026-08-22",
+  "topic": "caffeine before EEG",
+  "keywords": ["caffeine", "coffee"],
+  "trigger_terms": ["caffeine", "coffee"],
+  "conflict_group": "caffeine-rule",
+  "directive": "avoid-eight-hours",
+  "content": "Network B's approved demo checklist asks patients to avoid caffeine for eight hours before the EEG appointment."
+}
+

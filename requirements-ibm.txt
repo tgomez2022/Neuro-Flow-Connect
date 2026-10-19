@@ -1,0 +1,3 @@
+# Optional live IBM Granite integration. The MVP works without this package.
+ibm-watsonx-ai>=1.4.11,<2
+

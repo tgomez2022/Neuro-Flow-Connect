@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NeuroFlow Connect synthetic EEG care-coordination MVP for the IBM watsonx Challenge">
+  <title>NeuroFlow Connect — EEG Journey Orchestration</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-mark" aria-hidden="true">N</div>
+      <div>
+        <div class="brand">NeuroFlow <span>Connect</span></div>
+        <div class="brand-subtitle">Verified handoffs from referral to follow-up</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="badge badge-synthetic">Synthetic data only</span>
+      <span id="model-status" class="badge badge-neutral">Checking IBM mode…</span>
+      <button id="reset-button" class="button button-quiet" type="button">Reset demo</button>
+    </div>
+  </header>
+
+  <div id="safety-banner" class="safety-banner" role="note">
+    <strong>Clinical boundary:</strong> NeuroFlow coordinates work. It does not diagnose, interpret EEG waveforms, recommend treatment, or automate emergency triage.
+  </div>
+
+  <main id="main-content" class="app-shell">
+    <aside class="sidebar" aria-label="Case navigation">
+      <section aria-labelledby="portfolio-title">
+        <div class="section-kicker">Operations view</div>
+        <h1 id="portfolio-title">EEG journey command center</h1>
+        <p class="muted">Every case shows an owner, next action, evidence, and human gate.</p>
+      </section>
+
+      <section id="metrics" class="metric-grid" aria-label="Workflow metrics"></section>
+
+      <section>
+        <div class="section-heading-row">
+          <h2>Demo cases</h2>
+          <span id="case-count" class="count-chip">0</span>
+        </div>
+        <div id="case-list" class="case-list" role="list"></div>
+      </section>
+
+      <section class="demo-guide">
+        <div class="section-kicker">What to show judges</div>
+        <ol>
+          <li>Advance NF-001 through the complete loop.</li>
+          <li>Validate NF-002 to reveal the blocked referral.</li>
+          <li>Ask NF-003 about coffee to force safe abstention.</li>
+          <li>Inject the scheduling failure and show manual recovery.</li>
+        </ol>
+      </section>
+    </aside>
+
+    <section class="workspace" aria-live="polite">
+      <div id="loading" class="loading-state">Loading the synthetic care journey…</div>
+      <div id="case-workspace" hidden>
+        <section class="case-hero">
+          <div>
+            <div class="eyebrow-row">
+              <span id="case-id" class="case-id"></span>
+              <span id="case-priority" class="badge badge-neutral"></span>
+              <span id="case-status" class="badge badge-status"></span>
+            </div>
+            <h2 id="patient-alias"></h2>
+            <p id="case-summary" class="case-summary"></p>
+          </div>
+          <div class="completion-ring" aria-label="Workflow completion">
+            <div id="progress-value" class="completion-value">0%</div>
+            <div class="completion-label">journey</div>
+          </div>
+        </section>
+
+        <section class="owner-strip" aria-label="Current workflow responsibility">
+          <div>
+            <span class="label">Current owner</span>
+            <strong id="current-owner"></strong>
+          </div>
+          <div>
+            <span class="label">Next verified action</span>
+            <strong id="next-action"></strong>
+          </div>
+          <div>
+            <span class="label">Active specialist</span>
+            <strong id="active-agent"></strong>
+          </div>
+          <div>
+            <span class="label">Due</span>
+            <strong id="due-at"></strong>
+          </div>
+        </section>
+
+        <section class="panel journey-panel" aria-labelledby="journey-title">
+          <div class="panel-heading">
+            <div>
+              <span class="section-kicker">State is explicit</span>
+              <h2 id="journey-title">Patient journey</h2>
+            </div>
+            <span id="journey-state" class="state-pill"></span>
+          </div>
+          <div id="journey-track" class="journey-track"></div>
+        </section>
+
+        <div class="two-column primary-grid">
+          <section class="panel action-panel" aria-labelledby="action-title">
+            <div class="panel-heading">
+              <div>
+                <span class="section-kicker">Supervisor decision</span>
+                <h2 id="action-title">Action center</h2>
+              </div>
+              <span id="gate-chip" class="badge badge-neutral"></span>
+            </div>
+            <div id="action-content"></div>
+          </section>
+
+          <section class="panel case-facts" aria-labelledby="facts-title">
+            <div class="panel-heading">
+              <div>
+                <span class="section-kicker">Minimum necessary</span>
+                <h2 id="facts-title">Case facts</h2>
+              </div>
+              <span class="badge badge-synthetic">Fictional</span>
+            </div>
+            <dl id="case-facts-list"></dl>
+          </section>
+        </div>
+
+        <div class="two-column secondary-grid">
+          <section class="panel" aria-labelledby="tasks-title">
+            <div class="panel-heading">
+              <div>
+                <span class="section-kicker">Owned work</span>
+                <h2 id="tasks-title">Human review queue</h2>
+              </div>
+              <span id="open-task-count" class="count-chip">0</span>
+            </div>
+            <div id="task-list" class="task-list"></div>
+          </section>
+
+          <section class="panel knowledge-panel" aria-labelledby="knowledge-title">
+            <div class="panel-heading">
+              <div>
+                <span class="section-kicker">Grounded, cited, bounded</span>
+                <h2 id="knowledge-title">Preparation knowledge</h2>
+              </div>
+              <span class="badge badge-neutral">RAG demo</span>
+            </div>
+            <form id="knowledge-form">
+              <label for="knowledge-question">Ask an operational question</label>
+              <div class="question-row">
+                <input id="knowledge-question" name="question" value="How should a patient prepare for a routine EEG appointment?" autocomplete="off">
+                <button class="button button-primary" type="submit">Ask</button>
+              </div>
+            </form>
+            <div class="example-row" aria-label="Example questions">
+              <button class="text-button example-question" type="button" data-question="How should a patient prepare for a routine EEG appointment?">Grounded answer</button>
+              <button class="text-button example-question" type="button" data-question="Can I drink coffee before my EEG?">Conflict test</button>
+              <button class="text-button example-question" type="button" data-question="What does my EEG mean and do I have epilepsy?">Clinical boundary</button>
+            </div>
+            <div id="knowledge-result" class="knowledge-result empty-result">
+              Ask a question to see citations, evidence status, and safe abstention.
+            </div>
+          </section>
+        </div>
+
+        <section class="panel audit-panel" aria-labelledby="audit-title">
+          <div class="panel-heading">
+            <div>
+              <span class="section-kicker">Audit-ready traceability</span>
+              <h2 id="audit-title">Decision timeline</h2>
+            </div>
+            <span id="audit-count" class="count-chip">0</span>
+          </div>
+          <div id="audit-list" class="audit-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
+

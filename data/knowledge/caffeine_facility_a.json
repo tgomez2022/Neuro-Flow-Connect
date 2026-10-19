@@ -1,0 +1,15 @@
+{
+  "source_id": "SOP-CAFFEINE-A-004",
+  "title": "Facility A Caffeine Instruction",
+  "version": "2.0",
+  "status": "approved",
+  "owner": "Facility A SOP Owner",
+  "review_date": "2026-08-20",
+  "topic": "caffeine before EEG",
+  "keywords": ["caffeine", "coffee"],
+  "trigger_terms": ["caffeine", "coffee"],
+  "conflict_group": "caffeine-rule",
+  "directive": "follow-normal-routine",
+  "content": "Facility A's approved demo instructions say that patients may follow their normal caffeine routine unless their ordering clinician provides different directions."
+}
+

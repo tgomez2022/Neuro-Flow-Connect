@@ -1,0 +1,13 @@
+{
+  "source_id": "POL-RESULTS-003",
+  "title": "Signed Report and Results Communication Policy",
+  "version": "1.1",
+  "status": "approved",
+  "owner": "Clinical Operations",
+  "review_date": "2026-09-15",
+  "topic": "results communication",
+  "keywords": ["result", "report", "signed", "communication", "follow-up"],
+  "directive": "signed-and-approved-only",
+  "content": "A patient-facing results message may be released only after a qualified physician signs the report and an authorized clinician approves the wording and follow-up plan. Delivery, acknowledgment, follow-up owner, and follow-up timing must be recorded before workflow closure."
+}
+

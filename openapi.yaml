@@ -1,0 +1,270 @@
+openapi: 3.0.3
+info:
+  title: NeuroFlow Connect MVP Tools
+  version: 0.1.0
+  description: >-
+    Synthetic-data tools for coordinating a routine EEG referral-to-follow-up
+    journey. These tools do not diagnose, interpret EEG findings, recommend
+    treatment, or make emergency-triage decisions. Consequential actions require
+    a qualified human role.
+servers:
+  - url: http://localhost:8000
+    description: Local demo only; replace with an authorized HTTPS endpoint before import.
+tags:
+  - name: Observability
+  - name: Cases
+  - name: Knowledge
+paths:
+  /api/health:
+    get:
+      tags: [Observability]
+      operationId: getNeuroFlowHealth
+      summary: Check service, safety mode, and optional Granite status
+      responses:
+        "200":
+          description: Service status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /api/dashboard:
+    get:
+      tags: [Observability]
+      operationId: getNeuroFlowDashboard
+      summary: Get aggregate workflow and human-review metrics
+      responses:
+        "200":
+          description: Synthetic workflow dashboard
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /api/cases:
+    get:
+      tags: [Cases]
+      operationId: listNeuroFlowCases
+      summary: List synthetic EEG coordination cases
+      responses:
+        "200":
+          description: Cases and workflow states
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    post:
+      tags: [Cases]
+      operationId: createSyntheticNeuroFlowCase
+      summary: Create a synthetic case only
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [synthetic, patient_alias, fields]
+              properties:
+                synthetic:
+                  type: boolean
+                  enum: [true]
+                patient_alias:
+                  type: string
+                  description: A fictional alias; never submit a real patient name.
+                age_group:
+                  type: string
+                  default: Adult
+                fields:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "201":
+          description: Synthetic case created
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/Error"
+  /api/cases/{case_id}:
+    get:
+      tags: [Cases]
+      operationId: getNeuroFlowCase
+      summary: Get case state, tasks, human gates, and audit evidence
+      parameters:
+        - $ref: "#/components/parameters/CaseId"
+      responses:
+        "200":
+          description: Detailed synthetic case
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "404":
+          $ref: "#/components/responses/Error"
+  /api/cases/{case_id}/action:
+    post:
+      tags: [Cases]
+      operationId: performBoundedNeuroFlowAction
+      summary: Perform the next eligible administrative action or record a human gate
+      description: >-
+        The deterministic state machine rejects actions that are not eligible in the
+        current state and rejects roles that cannot cross the applicable human gate.
+      parameters:
+        - $ref: "#/components/parameters/CaseId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActionRequest"
+      responses:
+        "200":
+          description: Action accepted, blocked safely, or placed in manual fallback
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+  /api/cases/{case_id}/ask:
+    post:
+      tags: [Knowledge]
+      operationId: askApprovedNeuroFlowKnowledge
+      summary: Retrieve cited operational guidance or abstain
+      description: >-
+        Searches only the local approved demonstration corpus. Conflicting or absent
+        evidence triggers abstention and a human-review task. Clinical interpretation,
+        diagnosis, treatment, and medication-change requests are refused.
+      parameters:
+        - $ref: "#/components/parameters/CaseId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question, actor, role]
+              properties:
+                question:
+                  type: string
+                actor:
+                  type: string
+                role:
+                  type: string
+      responses:
+        "200":
+          description: Answer, abstention, refusal, or escalation with evidence status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/Error"
+  /api/cases/{case_id}/override:
+    post:
+      tags: [Cases]
+      operationId: recordNeuroFlowHumanOverride
+      summary: Record an authorized human override with a required reason
+      parameters:
+        - $ref: "#/components/parameters/CaseId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [actor, role, new_state, reason]
+              properties:
+                actor:
+                  type: string
+                role:
+                  type: string
+                  enum: [workflow_admin, neurologist, compliance_lead]
+                new_state:
+                  $ref: "#/components/schemas/WorkflowState"
+                reason:
+                  type: string
+                  minLength: 8
+      responses:
+        "200":
+          description: Override recorded in the audit trail
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+components:
+  parameters:
+    CaseId:
+      name: case_id
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: "^NF-[0-9]{3,}$"
+  schemas:
+    WorkflowState:
+      type: string
+      enum:
+        - RECEIVED
+        - NEEDS_INFORMATION
+        - READY_TO_SCHEDULE
+        - SCHEDULED
+        - READY_FOR_STUDY
+        - STUDY_COMPLETE
+        - AWAITING_INTERPRETATION
+        - REPORT_SIGNED
+        - RESULTS_COMMUNICATED
+        - FOLLOW_UP_CONFIRMED
+    ActionRequest:
+      type: object
+      required: [action, actor, role]
+      properties:
+        action:
+          type: string
+          enum:
+            - validate_intake
+            - approve_order
+            - resolve_information
+            - schedule_case
+            - acknowledge_preparation
+            - complete_study
+            - accept_handoff
+            - sign_report
+            - approve_results
+            - confirm_followup
+        actor:
+          type: string
+        role:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+  responses:
+    Error:
+      description: Safe error response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                enum: [false]
+              error:
+                type: string
+

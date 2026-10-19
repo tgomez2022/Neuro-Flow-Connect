@@ -1,0 +1,13 @@
+{
+  "source_id": "SOP-HANDOFF-006",
+  "title": "EEG Completion and Handoff Checklist",
+  "version": "1.0",
+  "status": "approved",
+  "owner": "EEG Technical Services",
+  "review_date": "2026-09-10",
+  "topic": "EEG technical handoff",
+  "keywords": ["study", "technical", "handoff", "complete", "recording"],
+  "directive": "technologist-acceptance-required",
+  "content": "A qualified EEG technologist confirms the study-completion checklist and the presence of required files and metadata before the packet is routed for interpretation. The workflow may flag missing items but does not determine technical adequacy or interpret waveforms."
+}
+

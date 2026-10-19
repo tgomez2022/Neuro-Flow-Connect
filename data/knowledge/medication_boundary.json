@@ -1,0 +1,13 @@
+{
+  "source_id": "SOP-EEG-MED-002",
+  "title": "Medication Question Boundary — Demo Facility",
+  "version": "1.0",
+  "status": "approved",
+  "owner": "Neurology Clinical Governance",
+  "review_date": "2026-09-01",
+  "topic": "medication preparation boundary",
+  "keywords": ["medication", "medicine", "drug", "dose", "prepare"],
+  "directive": "clinician-controls-medication",
+  "content": "NeuroFlow must not tell a patient to start, stop, skip, or change medication. The patient should follow the ordering clinician's documented instructions and contact the care team if the instructions are missing or unclear."
+}
+
